@@ -23,8 +23,6 @@ class Puck:
             self.pos.y = 0 + self.radius
         if self.pos.y + self.radius >= height:
             self.pos.y = height - self.radius
-        if self.pos.x - self.radius < 0 or self.pos.x + self.radius > width:
-            self.vel.x *= -1
 
     def draw(self, surf):
         pg.draw.circle(surf, self.color, (int(self.pos.x), int(self.pos.y)), self.radius)
@@ -53,6 +51,14 @@ class Board:
                 overlap = (self.puck.radius + p.radius) - dist
                 self.puck.pos += n * (overlap + 1)
         self.puck.update(dt, self.width, self.height)
+        if self.puck.pos.x - self.puck.radius <= 0:
+            if not (self.goal_margin <= self.puck.pos.y <= self.height - self.goal_margin):
+                self.puck.vel.x *= -1
+                self.puck.pos.x = self.puck.radius
+        if self.puck.pos.x + self.puck.radius >= self.width:
+            if not (self.goal_margin <= self.puck.pos.y <= self.height - self.goal_margin):
+                self.puck.vel.x *= -1
+                self.puck.pos.x = self.width - self.puck.radius
 
     def check_goal(self):
         if self.puck.pos.x - self.puck.radius <= 0:
