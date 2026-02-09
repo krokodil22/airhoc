@@ -7,8 +7,14 @@ def get_font(size=18):
         FONT_CACHE[size] = pg.font.SysFont("consolas", size)
     return FONT_CACHE[size]
 
-def draw_hud(screen, score_left, score_right, target_score, field_width):
-    text = f"L {score_left} : {score_right} R   |   до {target_score}"
+def format_match_time(elapsed_s):
+    minutes = int(elapsed_s) // 60
+    seconds = int(elapsed_s) % 60
+    return f"{minutes:02d}:{seconds:02d}"
+
+def draw_hud(screen, score_left, score_right, target_score, field_width, elapsed_s):
+    match_time = format_match_time(elapsed_s)
+    text = f"L {score_left} : {score_right} R   |   до {target_score}   |   Время {match_time}"
     surf = get_font(22).render(text, True, (230, 230, 240))
     screen.blit(surf, (field_width//2 - surf.get_width()//2, 10))
 
@@ -21,6 +27,7 @@ def draw_training_panel(screen, rect, stats):
         f"Данные: {stats['samples'] if stats['has_data'] else 'нет'}",
         f"Весов: {'есть' if stats['weights_loaded'] else 'нет'}",
         f"Сохранено: {stats['last_saved']}",
+        f"Средняя ошибка ИИ: {stats['ai_error_avg']}",
     ]
     y = rect.top + 44
     for line in lines:
@@ -34,6 +41,7 @@ def load_training_stats(meta_path, weights_loaded):
         "samples": 0,
         "last_saved": "—",
         "weights_loaded": weights_loaded,
+        "ai_error_avg": "—",
     }
     try:
         import json
