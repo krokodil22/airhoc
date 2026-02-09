@@ -7,10 +7,16 @@ class Puck:
         self.vel = Vector2(280, 120)
         self.radius = radius
         self.color = color
+        self.max_speed = 900
+
+    def clamp_speed(self):
+        if self.vel.length() > self.max_speed:
+            self.vel.scale_to_length(self.max_speed)
 
     def update(self, dt, width, height):
         self.pos += self.vel * dt
         self.vel *= 0.999
+        self.clamp_speed()
         if self.pos.y - self.radius <= 0 or self.pos.y + self.radius > height:
             self.vel.y *= -1
         if self.pos.y - self.radius <= 0:
@@ -43,6 +49,7 @@ class Board:
                 if vn < 0:
                     rel -= 2 * vn * n
                     self.puck.vel = rel + p.vel
+                    self.puck.clamp_speed()
                 overlap = (self.puck.radius + p.radius) - dist
                 self.puck.pos += n * (overlap + 1)
         self.puck.update(dt, self.width, self.height)
