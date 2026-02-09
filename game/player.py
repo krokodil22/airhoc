@@ -16,7 +16,7 @@ class BasePlayer:
         self.pos.y = max(self.radius, min(self.pos.y, height - self.radius))
 
     def draw(self, surf):
-        pg.draw.circle(surf, self.color, (int(self.pos.x), int(self.pos.y)), self.radius, 2)
+        pg.draw.circle(surf, self.color, (int(self.pos.x), int(self.pos.y)), self.radius)
 
 class HumanPlayer(BasePlayer):
     def update(self, dt):
