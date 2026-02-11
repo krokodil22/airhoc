@@ -24,14 +24,12 @@ def main():
     session_path = os.path.join(LOG_DIR, f"session_{int(time.time())}.csv")
     log_file = open(session_path, "w", newline="", encoding="utf-8")
     logger = csv.writer(log_file)
-    logger.writerow(["t","px","py","vx","vy","hx","hy","ax","ay","action_hx","action_hy","ai_error_avg"])
+    logger.writerow(["t","px","py","vx","vy","hx","hy","ax","ay","action_hx","action_hy"])
     running, score_left, score_right = True, 0, 0
     target_score = 10
     start_ts = time.time()
     stats = load_training_stats(os.path.join("ai", "meta.json"), ai.model is not None)
     panel_rect = pg.Rect(FIELD_WIDTH, 0, PANEL_WIDTH, HEIGHT)
-    ai_error_sum = 0.0
-    ai_error_count = 0
     while running:
         dt = clock.tick(FPS) / 1000.0
         for event in pg.event.get():
@@ -40,18 +38,10 @@ def main():
         puck = board.puck
         state = np.array([norm(puck.pos.x,0,FIELD_WIDTH), norm(puck.pos.y,0,HEIGHT), norm(puck.vel.x,-800,800), norm(puck.vel.y,-800,800), norm(human.pos.x,0,FIELD_WIDTH), norm(human.pos.y,0,HEIGHT)], dtype=np.float32)
         ax, ay = ai.decide(state, puck)
-        to_puck = np.array([puck.pos.x - ai.pos.x, puck.pos.y - ai.pos.y], dtype=np.float32)
-        norm_len = np.linalg.norm(to_puck) + 1e-6
-        desired = to_puck / norm_len
-        ai_err = float(np.linalg.norm(np.array([ax, ay], dtype=np.float32) - desired))
-        ai_error_sum += ai_err
-        ai_error_count += 1
-        ai_error_avg = ai_error_sum / ai_error_count
         ai.apply_action(ax, ay, dt)
         board.update(dt, [human, ai])
         hx, hy = human.last_action
-        logger.writerow([f"{time.time()-start_ts:.3f}",f"{state[0]:.6f}",f"{state[1]:.6f}",f"{state[2]:.6f}",f"{state[3]:.6f}",f"{state[4]:.6f}",f"{state[5]:.6f}",f"{norm(ai.pos.x,0,FIELD_WIDTH):.6f}",f"{norm(ai.pos.y,0,HEIGHT):.6f}",f"{hx:.6f}",f"{hy:.6f}",f"{ai_error_avg:.6f}"])
-        stats["ai_error_avg"] = f"{ai_error_avg:.3f}"
+        logger.writerow([f"{time.time()-start_ts:.3f}",f"{state[0]:.6f}",f"{state[1]:.6f}",f"{state[2]:.6f}",f"{state[3]:.6f}",f"{state[4]:.6f}",f"{state[5]:.6f}",f"{norm(ai.pos.x,0,FIELD_WIDTH):.6f}",f"{norm(ai.pos.y,0,HEIGHT):.6f}",f"{hx:.6f}",f"{hy:.6f}"])
         goal = board.check_goal()
         if goal == "left":
             score_left += 1; board.reset()
