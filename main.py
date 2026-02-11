@@ -28,7 +28,7 @@ def main():
     running, score_left, score_right = True, 0, 0
     target_score = 10
     start_ts = time.time()
-    stats = load_training_stats(os.path.join("ai", "meta.json"), ai.model is not None)
+    stats = load_training_stats(os.path.join("ai", "meta.json"))
     panel_rect = pg.Rect(FIELD_WIDTH, 0, PANEL_WIDTH, HEIGHT)
     while running:
         dt = clock.tick(FPS) / 1000.0

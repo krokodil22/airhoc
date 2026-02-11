@@ -25,7 +25,6 @@ def draw_training_panel(screen, rect, stats):
     screen.blit(title, (rect.left + 12, rect.top + 12))
     lines = [
         f"Данные: {stats['samples'] if stats['has_data'] else 'нет'}",
-        f"Весов: {'есть' if stats['weights_loaded'] else 'нет'}",
         f"Сохранено: {stats['last_saved']}",
         f"Средняя ошибка ИИ: {stats['ai_error_avg']}",
     ]
@@ -35,12 +34,11 @@ def draw_training_panel(screen, rect, stats):
         screen.blit(surf, (rect.left + 12, y))
         y += 22
 
-def load_training_stats(meta_path, weights_loaded):
+def load_training_stats(meta_path):
     stats = {
         "has_data": False,
         "samples": 0,
         "last_saved": "—",
-        "weights_loaded": weights_loaded,
         "ai_error_avg": "—",
     }
     try:
