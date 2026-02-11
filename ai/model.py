@@ -13,7 +13,6 @@ class MLP:
     def forward(self, x):
         self.cache = []
         a = x
-        print(self.shapes)
         for i, (W, b) in enumerate(zip(self.W, self.b)):
             z = a @ W + b
             if i < len(self.W)-1:
@@ -21,7 +20,6 @@ class MLP:
             else:
                 a = z
             self.cache.append((a, z))
-        # print(a)
         return a
 
     def backward(self, x, y_true):

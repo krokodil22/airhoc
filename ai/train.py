@@ -5,7 +5,7 @@ from ai.model import MLP
 DATA_DIR = os.path.join("../data", "sessions")
 SAVE_PATH = os.path.join("../ai", "weights.npz")
 META_PATH = os.path.join("../ai", "meta.json")
-EPOCHS = 8
+EPOCHS = 100
 BATCH = 256
 LR = 1e-3
 
@@ -18,6 +18,7 @@ def batches(X, Y, bs):
 
 def main():
     files = sorted(glob.glob(os.path.join(DATA_DIR, "*.csv")))
+    l = 0
     if not files:
         print("Нет данных — сыграйте несколько матчей.")
         return
@@ -48,8 +49,9 @@ def main():
             loss = np.mean((pred - yb)**2)
             loss_sum += loss; cnt += 1
         print(f"Epoch {ep}/{EPOCHS}: loss={loss_sum/cnt:.6f}")
+        l = loss_sum/cnt
     model.save(SAVE_PATH)
-    meta = {"saved": int(time.time()), "samples": int(X.shape[0])}
+    meta = {"saved": int(time.time()), "samples": int(X.shape[0]), 'loss': f'{l:.6f}'}
     with open(META_PATH, "w", encoding="utf-8") as f:
         json.dump(meta, f, ensure_ascii=False, indent=2)
     print(f"Сохранено: {SAVE_PATH}")
