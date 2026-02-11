@@ -51,6 +51,9 @@ def load_training_stats(meta_path, weights_loaded):
                 meta = json.load(f)
             stats["has_data"] = True
             stats["samples"] = int(meta.get("samples", 0))
+            loss = meta.get("loss")
+            if loss is not None:
+                stats["ai_error_avg"] = str(loss)
             ts = int(meta.get("saved", 0))
             if ts > 0:
                 stats["last_saved"] = time.strftime("%d.%m.%Y %H:%M", time.localtime(ts))
